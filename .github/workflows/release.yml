@@ -33,6 +33,12 @@ jobs:
         id: extract_tag
         run:  echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
 
+      - name: Debug
+        run: |
+          git describe --always
+          git branch -av
+          git tag
+
       - name: Build
         run: |
           yarn install
@@ -43,17 +49,6 @@ jobs:
           pushd dist
           ls -F | xargs tar -zcvf kc-console.tar.gz
           popd
-
-      - name: Setup ossutil
-        uses: manyuanrong/setup-ossutil@v2.0
-        with:
-          endpoint:  ${{ secrets.OSS_ENDPOINT }}
-          access-key-id: ${{ secrets.OSS_ACCESS_KEY }}
-          access-key-secret: ${{ secrets.OSS_ACCESS_SECRET }}
-      - name: Upload to oss
-        run: |
-          ossutil cp -rf dist/kc-console.tar.gz oss://${{ secrets.OSS_BUCKET }}/kc-console/${{ steps.extract_tag.outputs.version }}/
-
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(steps.extract_tag.outputs.version, 'v')

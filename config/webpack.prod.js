@@ -32,7 +32,7 @@ const gitRevision = new GitRevisionPlugin();
 
 const root = (path) => resolve(__dirname, `../${path}`);
 const version = common.version;
-
+console.log(gitRevision.version());
 module.exports = () => {
   return merge(common.commonConfig, {
     entry: {
